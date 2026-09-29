@@ -17,6 +17,7 @@ public class Product {
     private Integer id;
 
     private String name;
+    @Column(name = "description")
     private String desc;
     private String brand;
     private BigDecimal price;

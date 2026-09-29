@@ -25,25 +25,41 @@ public class ProductController {
     }
 
     @GetMapping("/product/{prodId}")
-    public ResponseEntity<Optional<Product>> getProductById(@PathVariable int prodId){
+    public ResponseEntity<Product> getProductById(@PathVariable int prodId){
         Optional<Product> product = service.getProductById(prodId);
-        if(product.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        else{
-            return new ResponseEntity<>(product,HttpStatus.OK);
-        }
+        return product
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/product")
     public ResponseEntity<?> addProduct(@RequestBody Product product){
-        try{
-            Product p=service.addProduct(product);
-            return new ResponseEntity<>(p,HttpStatus.CREATED);
+        Product p=service.addProduct(product);
+        return new ResponseEntity<>(p,HttpStatus.CREATED);
+
+    }
+
+    @PutMapping("/product/{prodId}")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable int prodId,
+            @RequestBody Product product) {
+
+        try {
+            Product updated = service.updateProduct(prodId, product);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         }
-        catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
+    @DeleteMapping("/product/{prodId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable int prodId) {
+        try {
+            service.deleteProduct(prodId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
