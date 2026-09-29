@@ -1,17 +1,13 @@
 package com.rohith.ecom_proj.controller;
-
 import com.rohith.ecom_proj.model.Product;
 import com.rohith.ecom_proj.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -29,9 +25,9 @@ public class ProductController {
     }
 
     @GetMapping("/product/{prodId}")
-    public ResponseEntity<Product> getProductById(@PathVariable int prodId){
-        Product product = service.getProductById(prodId);
-        if(product==null){
+    public ResponseEntity<Optional<Product>> getProductById(@PathVariable int prodId){
+        Optional<Product> product = service.getProductById(prodId);
+        if(product.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         else{
@@ -43,15 +39,11 @@ public class ProductController {
     public ResponseEntity<?> addProduct(@RequestBody Product product){
         try{
             Product p=service.addProduct(product);
-            return new ResponseEntity<>(p,HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(p,HttpStatus.CREATED);
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/product/{prodId}/image")
-    public Product getProductImage(@PathVariable int prodId){
-        return service.getProductById(prodId);
-    }
 }
