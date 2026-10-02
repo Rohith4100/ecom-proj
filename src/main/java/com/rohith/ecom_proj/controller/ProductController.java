@@ -11,20 +11,20 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
     private ProductService service;
 
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<List<Product>> getProducts(){
 
         List<Product> product= service.getAllProducts();
         return new ResponseEntity<>(product,HttpStatus.OK);
     }
 
-    @GetMapping("/product/{prodId}")
+    @GetMapping("/{prodId}")
     public ResponseEntity<Product> getProductById(@PathVariable int prodId){
         Optional<Product> product = service.getProductById(prodId);
         return product
@@ -32,14 +32,14 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/product")
+    @PostMapping
     public ResponseEntity<?> addProduct(@RequestBody Product product){
         Product p=service.addProduct(product);
         return new ResponseEntity<>(p,HttpStatus.CREATED);
 
     }
 
-    @PutMapping("/product/{prodId}")
+    @PutMapping("/{prodId}")
     public ResponseEntity<Product> updateProduct(@PathVariable int prodId, @RequestBody Product product) {
         Product updated = service.updateProduct(prodId, product);
         return new ResponseEntity<>(updated, HttpStatus.OK);
@@ -47,13 +47,18 @@ public class ProductController {
     }
 
     @DeleteMapping("/product/{prodId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable int prodId) {
-        service.deleteProduct(prodId);
-        return new ResponseEntity<>(HttpStatus.OK);
-
+    public ResponseEntity<String> deleteProduct(@PathVariable int prodId) {
+        try {
+            service.deleteProduct(prodId);
+            return ResponseEntity.ok("Product deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Cannot delete product because it is currently present in a cart");
+        }
     }
 
-    @GetMapping("/products/search")
+    @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(
             @RequestParam String keyword) {
 
