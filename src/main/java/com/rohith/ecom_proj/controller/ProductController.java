@@ -40,27 +40,17 @@ public class ProductController {
     }
 
     @PutMapping("/product/{prodId}")
-    public ResponseEntity<Product> updateProduct(
-            @PathVariable int prodId,
-            @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable int prodId, @RequestBody Product product) {
+        Product updated = service.updateProduct(prodId, product);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
 
-        try {
-            Product updated = service.updateProduct(prodId, product);
-            return new ResponseEntity<>(updated, HttpStatus.OK);
-        }
-        catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
     @DeleteMapping("/product/{prodId}")
     public ResponseEntity<?> deleteProduct(@PathVariable int prodId) {
-        try {
-            service.deleteProduct(prodId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        service.deleteProduct(prodId);
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @GetMapping("/products/search")

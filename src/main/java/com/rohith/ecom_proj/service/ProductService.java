@@ -1,5 +1,6 @@
 package com.rohith.ecom_proj.service;
 
+import com.rohith.ecom_proj.exception.ResourceNotFoundException;
 import com.rohith.ecom_proj.model.Product;
 import com.rohith.ecom_proj.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class ProductService {
 
     public Product updateProduct(int id, Product product) {
         Product existing = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
         existing.setName(product.getName());
         existing.setDesc(product.getDesc());
@@ -42,7 +43,7 @@ public class ProductService {
 
     public void deleteProduct(int id) {
         if(!repo.existsById(id)){
-            throw new RuntimeException("Product not found");
+            throw new ResourceNotFoundException("Product not found");
         }
         repo.deleteById(id);
     }
